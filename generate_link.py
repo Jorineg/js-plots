@@ -14,7 +14,7 @@ metrics = [
         "actual_return": np.random.rand(len(tokens)).tolist(),
     },
     {
-        "reward": ((np.random.rand(len(tokens))-0.5) * 5).tolist(),
+        "reward": ((np.random.rand(len(tokens)) - 0.5) * 5).tolist(),
     },
 ]
 
@@ -30,3 +30,6 @@ data = {
     "metrics": metrics,
 }
 
+# print link
+# github pages jorineg
+print(f"https://jorineg.github.io/js-plots?data={json.dumps(data)}")

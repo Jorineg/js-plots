@@ -1,7 +1,16 @@
 // let charts = [];
 
-function createVisualization(textColors, tokens, metrics) {
+function createVisualization(textColors, tokens, metrics, showPadding) {
     // const colors = d3.interpolateRainbow;
+
+    if (!showPadding) {
+        // check <pad> tokens in tokens and remove the items in these positions in all arrays
+        const padIndices = tokens.map((token, index) => token === "<pad>" ? index : -1).filter(index => index !== -1);
+        textColors = textColors.filter((_, index) => !padIndices.includes(index));
+        tokens = tokens.filter((_, index) => !padIndices.includes(index));
+        metrics = metrics.map(metric => Object.fromEntries(Object.entries(metric).map(([key, values]) => [key, values.filter((_, index) => !padIndices.includes(index))])));
+    }
+
     const margin = { top: 20, right: 100, bottom: 30, left: 50 };
 
     const containerWidth = document.getElementById('chart-container').clientWidth;
@@ -172,9 +181,3 @@ function createVisualization(textColors, tokens, metrics) {
         });
     }
 }
-
-window.addEventListener('resize', () => {
-    d3.select("#chart-container").selectAll("*").remove();
-    d3.select("#text-container").selectAll("*").remove();
-    createVisualization(text, tokens, metrics);
-});

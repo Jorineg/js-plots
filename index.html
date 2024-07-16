@@ -20,40 +20,64 @@
         <div id="text-container"></div>
         <div id="chart-container"></div>
     </div>
-    <script src="NewVisualization.js"></script>
-    <script>
+    <!-- upper rigth corner floating switch -->
+    <div id="switch"
+        style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); z-index: 100;">
+        <label>
+            <input type="checkbox" id="switch-checkbox" onclick="paddingToggle(this)" checked>
+            Show padding tokens
+        </label>
+        <script src="NewVisualization.js"></script>
+        <script>
 
-        function compressText(text) {
-            const compressed = pako.deflate(text);
-            return btoa(String.fromCharCode.apply(null, compressed))
-                .replace(/\+/g, '-')
-                .replace(/\//g, '_')
-                .replace(/=/g, '');
-        }
+            function compressText(text) {
+                const compressed = pako.deflate(text);
+                return btoa(String.fromCharCode.apply(null, compressed))
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=/g, '');
+            }
 
-        function decompressText(compressedText) {
-            const padding = '='.repeat((4 - (compressedText.length % 4)) % 4);
-            const base64 = (compressedText + padding).replace(/-/g, '+').replace(/_/g, '/');
-            const charData = atob(base64).split('').map(x => x.charCodeAt(0));
-            const inflated = pako.inflate(new Uint8Array(charData));
-            return new TextDecoder().decode(inflated);
-        }
+            function decompressText(compressedText) {
+                const padding = '='.repeat((4 - (compressedText.length % 4)) % 4);
+                const base64 = (compressedText + padding).replace(/-/g, '+').replace(/_/g, '/');
+                const charData = atob(base64).split('').map(x => x.charCodeAt(0));
+                const inflated = pako.inflate(new Uint8Array(charData));
+                return new TextDecoder().decode(inflated);
+            }
 
-        // load json from url data=json
-        var url = new URL(window.location.href);
-        var data = url.searchParams.get("data");
-        try {
-            var jsonData = JSON.parse(data);
-        } catch (e) {
-            data = decompressText(data);
-            var jsonData = JSON.parse(data);
-        }
-        const textColors = jsonData.textColors;
-        const tokens = jsonData.tokens;
-        const metrics = jsonData.metrics;
+            // load json from url data=json
+            var url = new URL(window.location.href);
+            var data = url.searchParams.get("data");
+            var showPadding = true
 
-        createVisualization(textColors, tokens, metrics);
-    </script>
+            try {
+                var jsonData = JSON.parse(data);
+            } catch (e) {
+                data = decompressText(data);
+                var jsonData = JSON.parse(data);
+            }
+            const textColors = jsonData.textColors;
+            const tokens = jsonData.tokens;
+            const metrics = jsonData.metrics;
+
+            function redraw() {
+                d3.select("#chart-container").selectAll("*").remove();
+                d3.select("#text-container").selectAll("*").remove();
+                createVisualization(textColors, tokens, metrics, showPadding);
+            }
+
+            redraw();
+
+            window.addEventListener('resize', () => {
+                redraw();
+            });
+
+            function paddingToggle(checkbox) {
+                showPadding = checkbox.checked;
+                redraw();
+            }
+        </script>
 </body>
 
 </html>

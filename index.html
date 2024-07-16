@@ -45,8 +45,12 @@
         // load json from url data=json
         var url = new URL(window.location.href);
         var data = url.searchParams.get("data");
-        data = decompressText(data);
-        var jsonData = JSON.parse(data);
+        try {
+            jsonData = JSON.parse(data);
+        } catch (e) {
+            data = decompressText(data);
+            jsonData = JSON.parse(data);
+        }
         const textColors = jsonData.textColors;
         const tokens = jsonData.tokens;
         const metrics = jsonData.metrics;

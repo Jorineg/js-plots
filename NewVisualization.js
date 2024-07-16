@@ -29,7 +29,7 @@ function createVisualization(textColors, tokens, metrics) {
     const textContainer = d3.select("#text-container");
     tokens.forEach((token, index) => {
         textContainer.append("span")
-            .text(token + " ")
+            .text(token)
             .style("background-color", textColors[index])
             .style("color", getTextColor(textColors[index]))
             .on("mouseover", () => highlightPosition(index))

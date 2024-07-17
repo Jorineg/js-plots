@@ -20,18 +20,19 @@ function createVisualization(textColors, tokens, metrics, showPadding) {
     const height = Math.max(containerHeight - margin.top - margin.bottom, 200);
 
     function getTextColor(bgColor) {
-        if (bgColor === undefined) return "#000000";
-        let color;
-        if (bgColor.startsWith("#")) color = bgColor.substring(1);
-        else if (bgColor.startsWith("rgb")) {
-            const rgb = bgColor.substring(bgColor.indexOf("(") + 1, bgColor.indexOf(")")).split(",");
-            color = rgb.map((c) => parseInt(c).toString(16)).join("");
-        } else color = bgColor;
-        const r = parseInt(color.substring(0, 2), 16);
-        const g = parseInt(color.substring(2, 4), 16);
-        const b = parseInt(color.substring(4, 6), 16);
+        if (!bgColor) return "#000000";
+
+        let r, g, b;
+        if (bgColor.startsWith("#")) {
+            [r, g, b] = [1, 3, 5].map(i => parseInt(bgColor.slice(i, i + 2), 16));
+        } else if (bgColor.startsWith("rgb")) {
+            [r, g, b] = bgColor.match(/\d+/g).map(Number);
+        } else {
+            [r, g, b] = [0, 2, 4].map(i => parseInt(bgColor.slice(i, i + 2), 16));
+        }
+
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        return (luminance > 0.5) ? '#000000' : '#ffffff';
+        return luminance > 0.5 ? '#000000' : '#ffffff';
     }
 
     // Create text visualization

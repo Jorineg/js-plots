@@ -138,8 +138,6 @@ function createVisualization(textColors, tokens, metrics, showPadding) {
             .style("font-weight", (d, i) => i === index ? "bold" : "normal")
             .style("text-decoration", (d, i) => i === index ? "underline" : "none");
 
-        console.log(charts)
-
         charts.forEach(([chart, x, y], i) => {
             chart.selectAll(".highlight-line").remove();
             chart.selectAll(".highlight-values").remove();
